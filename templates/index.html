@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Editor</title>
+  <style type="text/css" media="screen">
+    body {
+        /* overflow: hidden; */
+    }
+    #editor {
+        margin: 0;
+        /* position: absolute; */
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+    #Submit { 
+        margin-top: 10px;
+        margin-bottom: 10px;
+    } 
+  </style>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="static/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="static/mustache.min.js" type="text/javascript" charset="utf-8"></script>
+  <script  src="https://code.jquery.com/jquery-3.4.1.min.js"  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="  crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+ 
+  
+</head>
+<body>
+        <div class="container">
+ <h1>Simple Python Code Grader </h1>
+ <p>
+    Your task is to find an element of an array such that the sum of all elements to the left is equal to the sum of all elements to the right. For instance, given the array <code>[5,6,8,11], 8</code> is between two subarrays that sum to <code>11</code>. If your starting array is <code>[1]</code>, that element satisfies the rule as left and right sum to <code>0</code>.
+    You will be given arrays of integers and must determine whether there is an element that meets the criterion.
+ </p>
+ <h5>    
+    Function Description
+</h5>
+<p>       
+    Complete the <code>balancedSums</code> function in the editor below. It should return a <code>boolean</code>, either <code>True</code> if there is an element meeting the criterion or <code>False</code> otherwise.
+</p>
+<p> 
+    Function <code>balancedSums</code> has the following parameter:
+    <code>arr</code>: an array of integers
+</p>   
+<pre id="editor">
+# Complete the balancedSums function below.
+def balancedSums(arr):
+    return False
+</pre>
+
+  
+<button id="Submit"  type="button">
+    Submit
+</button>
+
+<div id="success_text" class="alert alert-success" role="alert"></div>
+<div id="error_text" class="alert alert-danger" role="alert"></div>
+<div><table id="result_table" class="table"><thead><th>Test Case</th><th>Passed</th></thead><tbody id="result_tbody"></tbody></table></div>
+
+
+
+{% raw %}
+<script>
+    var editor = ace.edit("editor");
+    //editor.setTheme("ace/theme/twilight");
+    editor.session.setMode("ace/mode/python");
+    
+    editor.setOptions({
+        autoScrollEditorIntoView: true,
+        maxLines: 30,
+        minLines:15
+    });
+    
+    $('#result_table').hide();
+    $('#success_text').hide();
+    $('#error_text').hide();
+
+    $("#Submit").on('click', function () {
+        url="/submissions";
+        var $this = $(this);
+        $this.button('loading');
+        
+        var posting = $.post( url, { source_code: editor.getValue() } );
+        
+        posting.done( function( response ) {
+            $this.button('reset');
+            //$.notify(response.text_message);
+            //$('#result_text').html(response.text_message);
+            //$('#result_text').toast('show')
+            if(response.success)
+            {
+                $('#success_text').html(response.text_message);
+                $('#success_text').show();
+                $('#error_text').hide();
+            }
+            else
+            {
+                $('#error_text').html(response.text_message);
+                $('#error_text').show();
+                $('#success_text').hide();
+            }
+
+            if(response.test_case_results.length == 0)
+            {
+                $('#result_table').hide();
+            }
+            else
+            {
+                $('#result_table').show();
+                var rendered = Mustache.render("{{#test_case_results}}<tr><td>{{descirption}}</td><td>{{passed}}</td><td>{{}}</td></tr>{{/test_case_results}}", response);
+                $('#result_tbody').html(rendered);
+            }
+        });
+
+        return true;
+    });
+    
+</script>
+{% endraw %}
+</div>
+</body>
+</html>

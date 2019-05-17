@@ -8,7 +8,6 @@ import time
 import uuid
 import sys
 
-db_connect = create_engine('sqlite:///grader.db')
 app = Flask(__name__)
 
 @app.route('/')
@@ -67,7 +66,6 @@ class Submissions(Resource):
         file.write(new_sub['source_code']) 
         file.close()
         #module_name = "usercode"
-        print("Test")
         try:
         
             __import__(module_name)
@@ -95,8 +93,7 @@ class Submissions(Resource):
                 resultText = "Please review your code."
         except:
             resultText = "Code execution failed. Please review your code."
-            print("Test 2")
-        print("Test3")
+
         
         result = {"text_message":   resultText, "test_case_results" : test_case_results, "success": success}
         
@@ -104,7 +101,7 @@ class Submissions(Resource):
         submissions.append(new_sub)
         return jsonify(result)
     def get(self):
-        return jsonify(submissions);
+        return jsonify(submissions)
 
 api.add_resource(Submissions, '/submissions') 
 

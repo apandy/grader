@@ -7,6 +7,7 @@ from flask import render_template
 import time
 import uuid
 import sys
+import os
 
 app = Flask(__name__)
 
@@ -66,6 +67,7 @@ class Submissions(Resource):
         file.write(new_sub['source_code']) 
         file.close()
         #module_name = "usercode"
+        success = False
         try:
         
             __import__(module_name)
@@ -77,7 +79,7 @@ class Submissions(Resource):
                     "descirption" : test_case["description"],
                     "received_output" : received_output,
                     "passed": received_output == test_case["expected_result"] })
-            success = False
+           
             
             if (all(item["passed"] for item in test_case_results )):
                 resultText= "All test cases passed. Nice work!"
@@ -94,6 +96,9 @@ class Submissions(Resource):
         except:
             resultText = "Code execution failed. Please review your code."
 
+        
+        if os.path.exists(module_name+".py"):
+            os.remove(module_name+".py") 
         
         result = {"text_message":   resultText, "test_case_results" : test_case_results, "success": success}
         

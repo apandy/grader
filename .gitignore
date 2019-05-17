@@ -50,4 +50,5 @@ coverage.xml
 docs/_build/
 
 .vscode/
+venv/
 .venv/
